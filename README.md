@@ -1,50 +1,17 @@
-# Network Manager Fix Add-on
+# Sebastien's Home Assistant add-on repository
 
-The **Network Manager Fix Add-on** is designed to address network flooding issues in Home Assistant caused by excessive mDNS traffic. It monitors and ensures the mDNS mode is set to `resolve`, preventing unwanted network activity while maintaining critical functionality for integrations like ESPHome.
+[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fsle118%2Faddons-network-manager-fix)
 
-## Features
+## Add-ons
 
-- Automatically monitors and adjusts the mDNS mode for a specified network interface.
-- Ensures changes are persistent by resetting mDNS mode if overridden by Home Assistant Supervisor.
-- Simple configuration through the Home Assistant add-on interface.
+This repository contains the following add-ons:
 
-## Why Use This Add-on?
+### [Network Manager Fix Add-on](./network_manager_fix)
 
-Certain network configurations, such as those using **Unifi mDNS reflectors** or multi-VLAN setups, may lead to name collisions, causing Home Assistant's mDNS system to generate excessive traffic. This add-on ensures your mDNS mode stays in the desired state (`resolve`) to prevent these issues.
+![Supports aarch64 Architecture][aarch64-shield]
+![Supports amd64 Architecture][amd64-shield]
+![Supports armhf Architecture][armhf-shield]
+![Supports armv7 Architecture][armv7-shield]
+![Supports i386 Architecture][i386-shield]
 
-## Installation
-
-1. Add this repository to your Home Assistant instance:
-
-   ```text
-   https://github.com/sle118/addons-network-manager-fix.git
-   ```
-
-2. Install the add-on from the Add-on Store.
-
-3. Configure the add-on through the UI or by editing the options.
-4. Start the add-on and check the logs for confirmation of operation.
-
-## Configuration
-
-The following options are available:
-
-```yaml
-primary_interface: ""  
-check_interval: 30
-```
-
-- **`primary_interface`** : Specify the network interface to monitor and adjust (e.g.,`enp0s3`). If left empty, the add-on will attempt to detect the primary interface automatically.
-- **`check_interval`** : The interval (in seconds) at which the add-on checks and adjusts the mDNS mode.
-
-## Documentation
-
-For more detailed documentation, including troubleshooting steps and examples, see the [DOCS.md]() file.
-
-## Support
-
-This add-on is provided as-is. If you encounter any issues or have feature requests, please open an issue in the [GitHub repository]().
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+A Home Assistant add-on designed to resolve excessive mDNS traffic issues by monitoring and maintaining the mDNS mode for a specified network interface.

@@ -42,28 +42,6 @@ This add-on is provided as-is and was developed to solve a specific issue in my 
 
 ---
 
-## Installation and Usage
-
-1. Clone the repository containing this add-on to your Home Assistant environment:
-
-   ```bash
-   git clone https://github.com/sle118/addons-network-manager-fix
-   ```
-
-2. Follow Home Assistant's [Add-on Installation Guide](https://www.home-assistant.io/addons) to install custom add-ons.
-3. Configure the add-on by specifying the primary network interface in the add-on's `config.json` file.
-4. Start the add-on. It will monitor and adjust the mDNS mode as needed.
-
----
-
-## Future Enhancements
-
-Planned improvements include:
-
-- None for now.
-
----
-
 ## Credits
 
 This add-on was inspired by community discussions and feedback from other Home Assistant users experiencing similar network flooding issues. Special thanks to the open-source community for their continuous support!
