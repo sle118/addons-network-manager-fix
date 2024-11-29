@@ -4,10 +4,12 @@ slug: network_manager_fix
 description: Fix NetworkManager configuration for mDNS to prevent flooding caused by reflectors across multiple vlans
 init: false
 arch:
+  - armhf
   - armv7
   - aarch64
   - amd64
   - i386
+url: https://github.com/sle118/addons-network-manager-fix/tree/main/network-manager-fix
 full_access: true
 host_dbus: true
 host_network: true
