@@ -1,0 +1,27 @@
+name: NetworkManager Fix
+version: "1.0"
+slug: network_manager_fix
+description: Fix NetworkManager configuration for mDNS to prevent flooding caused by reflectors across multiple vlans
+init: false
+arch:
+  - armv7
+  - aarch64
+  - amd64
+  - i386
+full_access: true
+host_dbus: true
+host_network: true
+options: {}
+schema: {}
+hassio_api: true
+hassio_role: manager
+panel_icon: mdi:download-network
+privileged: [NET_ADMIN, NET_RAW, PERFMON, SYS_ADMIN]
+image: sle118/
+options:
+  primary_connection: ""
+  sleep_time_seconds: 60
+
+schema:
+  primary_connection: "str"
+  sleep_time_seconds: "int(30,300)"

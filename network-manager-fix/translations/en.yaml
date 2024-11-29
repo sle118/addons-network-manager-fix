@@ -1,0 +1,7 @@
+configuration:
+  primary_connection: 
+    name: Primary Connection
+    description: The primary conection to monitor
+  sleep_time_seconds: 
+    name: Time (sec)
+    description: The time to sleep between each verification of the network

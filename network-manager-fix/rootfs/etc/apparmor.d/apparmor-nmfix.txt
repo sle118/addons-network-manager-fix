@@ -1,0 +1,23 @@
+#include <tunables/global>
+
+profile nmfix flags=(complain) {
+    # Include basic permissions
+    #include <abstractions/base>
+
+    # Allow execution of binaries
+    /bin/** ix,
+    /usr/bin/** ix,
+
+    # Allow access to service-specific files
+
+
+    # Allow access to the network
+    /run/** rw,
+    /dev/** rw,
+
+    # Temporary file access
+    /tmp/** rw,
+
+    # Logging
+    /var/log/** rw,
+}

@@ -1,0 +1,27 @@
+#!/usr/bin/with-contenv bashio
+set -e
+apparmorfile="apparmor-nmfix.txt"
+if ! aa-enabled --quiet 2>/dev/null; then
+    echo "[Warning]: apparmor not available on host system!"
+    
+# else 
+    # if ! command -v apparmor_parser >/dev/null 2>&1; then
+    #         bashio::log.error "AppArmor is not installed."
+    #         # list each installed package in the system
+    #         for pkg in $(apk list --installed); do
+    #             bashio::log.info "$pkg"
+    #         done
+    #         return 1
+    #     fi
+
+    # if [ -e /etc/apparmor.d/$apparmorfile ]; then
+    #     echo "Loading AppArmor profile for $(bashio::addon.name)..."
+    #     apparmor_parser -r /etc/apparmor.d/$apparmorfile
+    #     echo "AppArmor profile for $(bashio::addon.name) loaded successfully."
+    # else
+    #     echo "AppArmor profile not found: /etc/apparmor.d/$apparmorfile"
+    # fi
+fi
+
+# Start the service
+exec /usr/bin/nmfix-run

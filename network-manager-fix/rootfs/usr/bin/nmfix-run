@@ -1,0 +1,208 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Start service
+# ==============================================================================
+# bashio::log.info "Starting Network Manager Fix Service..."
+declare primary_connection
+declare primary_device
+
+
+
+if ! bashio::config.exists log_level; then
+  bashio::log.magenta 'No log_level set in config, fallback to info'
+fi
+log_level=$(bashio::string.lower "$(bashio::config log_level info)")
+
+# Make Matter SDK log level currently default to error
+log_level_sdk=$(bashio::string.lower "$(bashio::config log_level_sdk error)")
+
+# Function to generate connections JSON and log available interfaces
+generate_connections_json() {
+    # Generate JSON object from `nmcli connection show`
+    connections_json=$(nmcli --terse --fields NAME,TYPE,DEVICE connection show | awk -F':' '
+    BEGIN { print "[" }
+    NR > 1 { print "," }
+    { printf "{ \"name\": \"%s\", \"type\": \"%s\", \"device\": \"%s\" }", $1, $2, $3 }
+    END { print "]" }')
+
+    # Check if JSON was generated successfully
+    if [ -z "${connections_json}" ]; then
+        bashio::log.error "Failed to generate connections JSON. Is nmcli installed and functional?"
+        return 1
+    fi
+    # Return the JSON for further use
+    echo "${connections_json}"
+    return 0
+}
+
+get_connection_mdns_status() {
+    local connection_name="$1"
+
+    # Validate that a connection name is provided
+    if [ -z "$connection_name" ]; then
+        bashio::log.error "Connection name is required to check mDNS status."
+        return 1
+    fi
+
+    # Check if nmcli is installed
+    if ! command -v nmcli >/dev/null 2>&1; then
+        bashio::log.error "nmcli is not installed. Cannot check mDNS status."
+        return 1
+    fi
+
+    # Fetch the mDNS status for the connection
+    local mdns_status
+    mdns_status=$(nmcli connection show "$connection_name" 2>/dev/null | grep "connection.mdns" | awk '{gsub(/[()]/, "", $3); print $3}')
+
+    if [ -z "$mdns_status" ]; then
+        bashio::log.error "Failed to fetch mDNS status for connection: $connection_name"
+        return 1
+    fi
+
+    # Return the mDNS status
+    echo "$mdns_status"
+    return 0
+}
+set_connection_mdns_status() {
+    local connection_name="$1"
+    local mdns_status="$2"
+
+    # Validate inputs
+    if [ -z "$connection_name" ] || [ -z "$mdns_status" ]; then
+        bashio::log.error "Connection name and mDNS status are required."
+        return 1
+    fi
+
+    # Validate the mDNS status value
+    if [[ "$mdns_status" != "yes" && "$mdns_status" != "no" && "$mdns_status" != "resolve" ]]; then
+        bashio::log.error "Invalid mDNS status value: $mdns_status. Allowed values are: yes, no, resolve."
+        return 1
+    fi
+
+    # Check if nmcli is installed
+    if ! command -v nmcli >/dev/null 2>&1; then
+        bashio::log.error "nmcli is not installed. Cannot set mDNS status."
+        return 1
+    fi
+
+    # Modify the mDNS status for the connection
+    nmcli connection modify "$connection_name" connection.mdns "$mdns_status"
+    if [ $? -ne 0 ]; then
+        bashio::log.error "Failed to set mDNS status for connection: $connection_name"
+        return 1
+    fi
+
+    # Restart the connection to apply the changes
+    nmcli connection down "$connection_name" && nmcli connection up "$connection_name"
+    if [ $? -ne 0 ]; then
+        bashio::log.error "Failed to restart connection: $connection_name"
+        return 1
+    fi
+
+    bashio::log.info "Successfully set mDNS status for connection: $connection_name to $mdns_status"
+    return 0
+}
+
+
+
+get_interface_from_name() {
+    local interface_name="$1"
+
+    # Ensure the interface_name is provided
+    if [ -z "$interface_name" ]; then
+        bashio::log.error "Connection name is required."
+        return 1
+    fi
+
+    # Retrieve the device name from the connections_json array
+    local device
+    device=$(echo "${connections_json}" | jq -r --arg name "${interface_name}" '.[] | select(.name == $name) | .device')
+
+    # Check if a device was found
+    if [ -z "$device" ] || [ "$device" == "null" ]; then
+        bashio::log.error "No device found for connection name: ${interface_name}"
+        return 1
+    fi
+
+    # Output the device name
+    echo "$device"
+    return 0
+}
+get_connection_from_interface() {
+    local interface_name="$1"
+
+    # Ensure the interface_name is provided
+    if [ -z "$interface_name" ]; then
+        bashio::log.error "Device name is required."
+        return 1
+    fi
+
+    # Retrieve the device name from the connections_json array
+    local device
+    device=$(echo "${connections_json}" | jq -r --arg device "${interface_name}" '.[] | select(.device == $device) | .name')
+
+    # Check if a device was found
+    if [ -z "$device" ] || [ "$device" == "null" ]; then
+        bashio::log.error "No device found for device name: ${interface_name}"
+        return 1
+    fi
+
+    # Output the device name
+    echo "$device"
+    return 0
+}
+connections_json=$(generate_connections_json)
+bashio::log.debug "Generated connections JSON:"
+bashio::log.debug "${connections_json}"
+# Log available network interfaces
+
+
+# Check if primary_connection is set in the configuration
+if ! bashio::config.has_value "primary_connection"; then
+    bashio::log.info "If different than the primary interface, please configure a primary interface from the following list:"
+    echo "${connections_json}" | jq -c '.[] | .name' | while read -r connection_name; do
+        bashio::log.info "${connection_name}"
+    done
+    # Fetch the primary adapter from the Supervisor API
+    primary_device="$(bashio::api.supervisor 'GET' '/network/info' '' 'first(.interfaces[] | select (.primary == true)) .interface')"
+    # Use get_interface_from_name to find the connection name for the primary adapter
+    bashio::log.info "Primary adapter automatically detected: ${primary_device}. Getting connection name..."
+    primary_connection=$(get_connection_from_interface "$primary_device")
+
+    if [ -z "${primary_connection}" ]; then
+        bashio::log.error "Could not find a connection name for the primary adapter: ${primary_device}"
+        exit 1
+    fi
+
+    bashio::log.info "Primary interface automatically detected: ${primary_connection}"
+else
+    # Use the user-provided primary interface
+    primary_connection=$(bashio::config 'primary_connection')
+
+    # Verify the provided interface exists
+    primary_device=$(get_interface_from_name "$primary_connection")
+    if [ -z "${resolvprimary_deviceed_device}" ]; then
+        bashio::log.error "User-provided primary interface '${primary_connection}' is invalid or not found."
+        exit 1
+    fi
+
+    bashio::log.info "Using user-defined primary interface: ${primary_connection} (device: ${primary_device})"
+fi
+
+bashio::config.has_value 'sleep_time_seconds' \
+    && SLEEP_TIME="$(bashio::config 'sleep_time_seconds')" || SLEEP_TIME=60
+
+
+
+while true; do
+    status=$(get_connection_mdns_status "$primary_connection")
+    bashio::log.info "Current mDNS status for $primary_device (${primary_connection}): $status"
+    # if status is not resolve, set it to resolve
+    if [ "$status" != "resolve" ]; then
+        bashio::log.info "Setting mDNS status for $primary_device (${primary_connection}) to resolve"
+        set_connection_mdns_status "$primary_connection" "resolve"
+    else
+        bashio::log.info "no changes needed for $primary_device (${primary_connection})"
+    fi
+    sleep "$SLEEP_TIME"
+done

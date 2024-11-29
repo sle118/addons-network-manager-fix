@@ -1,0 +1,4 @@
+# Repository configuration for Home Assistant add-ons
+name: Network Manager Fix Add-ons
+url: 'https://github.com/sle118/addons-network-manager-fix'
+maintainer: Sébastien L <sle118@users.noreply.github.com>

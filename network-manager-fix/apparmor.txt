@@ -1,0 +1,23 @@
+#include <tunables/global>
+
+profile network_manager_fix flags=(complain) {
+  # Basic system access
+  #include <abstractions/base>
+
+  # Allow basic file access
+  file,
+
+  # Access to required directories
+  /etc/** r,
+  /data/** rw,
+
+  # Allow execution of binaries and scripts
+  #/bin/** ix,
+  #/usr/bin/** ix,
+
+  # Allow S6-Overlay operations
+  /run/{s6,s6-rc*,service}/** rw,
+
+  # Allow logging
+  #/var/log/** rw,
+}
