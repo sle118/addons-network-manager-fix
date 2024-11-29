@@ -25,6 +25,4 @@ All notable changes to this project will be documented in this file.
 
 ### Planned
 
-- Enhanced logging and diagnostics for troubleshooting.
-- Multi-interface support for advanced network setups.
-- Web-based configuration interface for ease of use.
+- None at this time.
