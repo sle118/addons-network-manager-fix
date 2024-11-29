@@ -47,7 +47,7 @@ This add-on is provided as-is and was developed to solve a specific issue in my 
 1. Clone the repository containing this add-on to your Home Assistant environment:
 
    ```bash
-   git clone https://github.com/sle118/network_manager_fix.git
+   git clone https://github.com/sle118/addons-network-manager-fix
    ```
 
 2. Follow Home Assistant's [Add-on Installation Guide](https://www.home-assistant.io/addons) to install custom add-ons.

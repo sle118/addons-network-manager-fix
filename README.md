@@ -17,7 +17,7 @@ Certain network configurations, such as those using **Unifi mDNS reflectors** or
 1. Add this repository to your Home Assistant instance:
 
    ```text
-   https://github.com/sle118/custom-network-fix.git
+   https://github.com/sle118/addons-network-manager-fix.git
    ```
 
 2. Install the add-on from the Add-on Store.

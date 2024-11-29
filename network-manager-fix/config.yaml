@@ -17,7 +17,7 @@ hassio_api: true
 hassio_role: manager
 panel_icon: mdi:download-network
 privileged: [NET_ADMIN, NET_RAW, PERFMON, SYS_ADMIN]
-image: sle118/
+image: sle118/addons-network-manager-fix
 options:
   primary_connection: ""
   sleep_time_seconds: 60
