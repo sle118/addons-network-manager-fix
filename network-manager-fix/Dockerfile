@@ -42,6 +42,9 @@ RUN curl -Lso /usr/bin/ha \
 # Copy data
 COPY rootfs /
 
+
 RUN \
     set -x && \
-    chmod a+x /usr/bin/nmfix*
+    chmod a+x /usr/bin/nmfix*  &&\
+    chmod a+x /etc/s6-overlay/scripts/* &&\
+    chmod a+x /etc/s6-overlay/s6-rc.d/nmfix/*
