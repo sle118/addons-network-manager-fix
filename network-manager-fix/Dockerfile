@@ -3,8 +3,6 @@ FROM $BUILD_FROM
 
 # Setup base
 ARG LIBWEBSOCKETS_VERSION
-ARG TTYD_VERSION
-
 # Setup base
 RUN \
     set -x && \
