@@ -181,7 +181,7 @@ else
 
     # Verify the provided interface exists
     primary_device=$(get_interface_from_name "$primary_connection")
-    if [ -z "${resolvprimary_deviceed_device}" ]; then
+    if [ -z "${primary_device}" ]; then
         bashio::log.error "User-provided primary interface '${primary_connection}' is invalid or not found."
         exit 1
     fi
