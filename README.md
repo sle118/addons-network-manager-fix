@@ -14,4 +14,10 @@ This repository contains the following add-ons:
 ![Supports armv7 Architecture][armv7-shield]
 ![Supports i386 Architecture][i386-shield]
 
-A Home Assistant add-on designed to resolve excessive mDNS traffic issues by monitoring and maintaining the mDNS mode for a specified network interface.
+A Home Assistant add-on designed to resolve excessive mDNS traffic issues by monitoring and maintaining the mDNS mode for a specified network interface. It sets the mDNS mode on the "Primary" interface (whether autodetected or explicitly configured, e.g. Supervisor enp1s0) to resolve. See the [documentation](./network_manager_fix/DOCS.md) for more information.
+
+[aarch64-shield]: https://img.shields.io/badge/aarch64-yes-green.svg
+[amd64-shield]: https://img.shields.io/badge/amd64-yes-green.svg
+[armhf-shield]: https://img.shields.io/badge/armhf-yes-green.svg
+[armv7-shield]: https://img.shields.io/badge/armv7-yes-green.svg
+[i386-shield]: https://img.shields.io/badge/i386-yes-green.svg
